@@ -1,6 +1,6 @@
 <template>
   <v-container class="fill-height justify-center" fluid>
-    <v-card max-width="500" class="pa-10 mx-auto" elevation="24" rounded="xl" theme="light">
+    <v-card max-width="600" class="pa-10 mx-auto" elevation="24" rounded="xl" theme="light">
       <v-card-item class="text-center mb-4">
         <v-card-tilte class="text-h5 font-weight-bold text-indigo-darken-3">
           Crear Cuenta Nexus
@@ -8,8 +8,9 @@
         <v-card-subtitle> Ingresa tus datos para comenzar </v-card-subtitle>
       </v-card-item>
 
-      <v-form>
+      <v-form v-model="isFormValid" @submit.prevent="handleRegister">
         <v-text-field
+          v-model="form.name"
           label="Nombre Completo"
           prepend-inner-icon="mdi-account"
           variant="outlined"
@@ -18,6 +19,7 @@
           :rules="[(v) => !!v || 'El Nombre es obligatorio']"
         ></v-text-field>
         <v-text-field
+          v-model="form.email"
           label="Correo Electronico"
           placeholder="ejemplo@nexus.com"
           prepend-inner-icon="mdi-email-outline"
@@ -30,9 +32,13 @@
           ]"
         ></v-text-field>
         <v-text-field
+          v-model="form.password"
           label="Contrasenia"
+          :type="showPassword ? 'text' : 'password'"
+          prepend-inner-icon="mdi-lock-outline"
+          :apend-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+          @click:append-inner="showPassword = !showPassword"
           placeholder="Contrasenia"
-          prepend-inner-icon="mdi-lock"
           variant="outlined"
           color="indigo"
           class="mb-2"
@@ -43,8 +49,10 @@
         >
         </v-text-field>
         <v-select
+          v-model="form.roleId"
           label="Tipo de Usuario"
-          item-title="text"
+          :items="roles"
+          item-title="label"
           item-value="value"
           prepend-inner-icon="mdi-shield-account-outline"
           variant="outlined"
@@ -59,6 +67,9 @@
           size="x-large"
           type="submit"
           class="text-none font-weight-bold"
+          :loading="loading"
+          :disabled="!isFormValid"
+          elevation="4"
         >
           REGISTRARSE
         </v-btn>
@@ -67,6 +78,41 @@
   </v-container>
 </template>
 
-<script setup></script>
+<script setup>
+import { toast } from "vue3-toastify";
+import { ref, reactive } from 'vue'
+import api from '@/services/api'
+
+const isFormValid = ref(false)
+const loading = ref(false)
+const showPassword = ref(false)
+
+// const roles=ref([])
+
+const form = reactive({
+  name: '',
+  email: '',
+  password: '',
+  roleId: null,
+})
+const roles = [
+  { label: 'Administrador', value: 1 },
+  { label: 'Agente', value: 2 },
+  { label: 'Cliente', value: 3 },
+]
+
+const handleRegister = async () => {
+  if (!isFormValid) return
+  loading.value = true
+  try {
+    const { data } = await api.post('auth/register', form)
+    toast.success(data.message)
+  } catch (error) {
+    const {message}=error?.response?.data
+    toast.error(message)
+  }
+  loading.value = false
+}
+</script>
 
 <style lang="scss" scoped></style>

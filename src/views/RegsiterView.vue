@@ -1,7 +1,7 @@
 <template>
   <v-row no-gutters class="fill-height" align="center" justify="center">
-    <v-col cols="12" sm="8" md="4">
-      <div class="text-center my-5">
+    <v-col cols="12" sm="8" md="4" lg="4" xl="3">
+      <div class="text-center mb-8">
         <v-img
           src="../src/assets/logo-nexus.png"
           alt="nexus support-logo"
@@ -25,4 +25,13 @@
 import RegisterForm from '@/components/Auth/RegisterForm.vue'
 </script>
 
-<style lang="scss" scoped></style>
+<style  scoped>
+  .v-img{
+    filter: drop-shadow(0px 4px rgba(0,0,0,0.3));
+    transition: transform 0.3s ease;
+
+    &:hover{
+      transform:(scale(1.05));
+    }
+  }
+</style>
