@@ -4,25 +4,25 @@
       <div class="text-center mb-8">
         <v-img
           src="../src/assets/logo-nexus.png"
-          alt="nexus support-logo"
+          alt="nexus-support-logo"
           max-height="100"
           contain
           class="mx-auto"
         />
       </div>
-      <RegisterForm />
+      <LoginForm />
       <p class="text-center mt-4">
-        Ya tienes cuenta?
-        <router-link to="/login" class="text-blue-lighten-3 font-weight-bold"
-          >Inicia Sesion</router-link
-        >
+        No tienes cuenta?
+        <router-link to="/register" class="text-blue-lighten-3 font-weight-bold">
+          Registrate
+        </router-link>
       </p>
     </v-col>
   </v-row>
+  <div></div>
 </template>
-
 <script setup>
-import RegisterForm from '@/components/Auth/RegisterForm.vue'
+import LoginForm from '@/components/Auth/LoginForm.vue'
 </script>
 
 <style scoped>

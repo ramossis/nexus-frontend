@@ -2,9 +2,9 @@
   <v-container class="fill-height justify-center" fluid>
     <v-card max-width="600" class="pa-10 mx-auto" elevation="24" rounded="xl" theme="light">
       <v-card-item class="text-center mb-4">
-        <v-card-tilte class="text-h5 font-weight-bold text-indigo-darken-3">
+        <v-card-title class="text-h5 font-weight-bold text-indigo-darken-3">
           Crear Cuenta Nexus
-        </v-card-tilte>
+        </v-card-title>
         <v-card-subtitle> Ingresa tus datos para comenzar </v-card-subtitle>
       </v-card-item>
 
@@ -79,10 +79,13 @@
 </template>
 
 <script setup>
-import { toast } from "vue3-toastify";
+import { toast } from 'vue3-toastify'
 import { ref, reactive } from 'vue'
-import api from '@/services/api'
+import { useAuthStore } from '@/stores/authStore'
+import { storeToRefs } from 'pinia'
 
+const authStore = useAuthStore()
+const { auth } = storeToRefs(authStore)
 const isFormValid = ref(false)
 const loading = ref(false)
 const showPassword = ref(false)
@@ -102,14 +105,13 @@ const roles = [
 ]
 
 const handleRegister = async () => {
-  if (!isFormValid) return
+  if (!isFormValid.value) return
   loading.value = true
-  try {
-    const { data } = await api.post('auth/register', form)
-    toast.success(data.message)
-  } catch (error) {
-    const {message}=error?.response?.data
-    toast.error(message)
+  await authStore.registerUser(form)
+  if (auth.value.success) {
+    toast.success(auth.value.message)
+  } else {
+    toast.error(auth.value.message)
   }
   loading.value = false
 }
