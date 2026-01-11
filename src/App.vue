@@ -8,7 +8,7 @@ const color = ref('success')
 <template>
   <v-app>
     <v-main class="bg-grey-darken-4">
-      <router-view v-slot="{ Component }">
+      <router-view v-slot="{ Component }" :key="$route.fullPath">
         <transition name="fade" mode="out-in">
           <component :is="Component" />
         </transition>

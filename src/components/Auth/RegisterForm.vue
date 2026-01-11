@@ -81,9 +81,11 @@
 <script setup>
 import { toast } from 'vue3-toastify'
 import { ref, reactive } from 'vue'
+import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
 import { storeToRefs } from 'pinia'
 
+const router = useRouter()
 const authStore = useAuthStore()
 const { auth } = storeToRefs(authStore)
 const isFormValid = ref(false)
@@ -110,6 +112,7 @@ const handleRegister = async () => {
   await authStore.registerUser(form)
   if (auth.value.success) {
     toast.success(auth.value.message)
+    router.push('/dashboard')
   } else {
     toast.error(auth.value.message)
   }
