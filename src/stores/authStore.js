@@ -33,10 +33,24 @@ export const useAuthStore = defineStore('authStore', () => {
       }
     }
   }
-  const login = async (email, password) => {
+  const loginUser = async ({ email, password }) => {
+    // console.log(email, password)
     try {
       const { data } = await api.post('auth/login', { email, password })
-    } catch (error) {}
+      // console.log('Bien', data
+      auth.value = {
+        success: true,
+        message: data.message,
+        user: data.user.name,
+      }
+      localStorage.setItem('token', data.token)
+      localStorage.setItem('user', JSON.stringify(data.user.name))
+    } catch (error) {
+      auth.value = {
+        success: false,
+        message: error.response.data.message,
+      }
+    }
   }
-  return { auth, login, registerUser }
+  return { auth, loginUser, registerUser }
 })

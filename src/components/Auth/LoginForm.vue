@@ -7,13 +7,14 @@
         </v-card-title>
         <v-card-subtitle> Ingresa tus credenciales para continuar </v-card-subtitle>
       </v-card-item>
-      <v-form>
+      <v-form v-model="isFormValid" @submit.prevent="handleLogin">
         <v-text-field
           label="Correo Electronico"
           prepend-inner-icon="mdi-email-outline"
           variant="outlined"
           color="indigo"
           class="mb-2"
+          v-model="form.email"
           :rules="[
             (v) => !!v || 'El Correro es Obligatorio',
             (v) => /.+@.+\..+/.test(v) || 'E-mail no valido',
@@ -22,11 +23,15 @@
         </v-text-field>
         <v-text-field
           label="Contraseña"
+          :type="showPassword ? 'text' : 'password'"
           prepend-inner-icon="mdi-lock-outline"
+          :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+          @click:append-inner="showPassword = !showPassword"
           placeholder="Contraseña"
           variant="outlined"
           color="indigo"
           class="mb-2"
+          v-model="form.password"
           :rules="[
             (v) => !!v || 'La Contraseña es obligatoria',
             (v) => v.length >= 6 || 'Minimo 6 caracteres',
@@ -40,6 +45,8 @@
           type="submit"
           class="text-none font weight-bold"
           elevation="4"
+          :loading="loading"
+          :disabled="!isFormValid"
         >
           Iniciar Sesión
         </v-btn>
@@ -48,6 +55,38 @@
   </v-container>
 </template>
 
-<script setup></script>
+<script setup>
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/authStore'
+import { storeToRefs } from 'pinia'
+import { ref, reactive } from 'vue'
+import { toast } from 'vue3-toastify'
+
+const isFormValid = ref(false)
+const loading = ref(false)
+const showPassword = ref(false)
+
+const authStore = useAuthStore()
+const { auth } = storeToRefs(authStore)
+const router = useRouter()
+const form = reactive({
+  email: '',
+  password: '',
+})
+
+const handleLogin = async () => {
+  if (!isFormValid) return
+  loading.value = true
+  await authStore.loginUser(form)
+  if (auth.value.success) {
+    toast.success(auth.value.message)
+    router.push('/dashboard')
+  } else {
+    toast.error(auth.value.message)
+  }
+  // console.log('Login Success', auth.value.success)
+  loading.value = false
+}
+</script>
 
 <style lang="scss" scoped></style>
